@@ -1,0 +1,72 @@
+--Objective:
+--To explore patterns in billing amounts across hospitals, medical conditions, and admission types
+--while identifying trends indicating higher costs for specific insurance providers and patient demographics.
+
+SELECT *
+FROM healthcare_1;
+
+--1. Billing Patterns:
+
+    --Which hospitals have the highest and lowest average billing amounts?
+
+SELECT TOP 10 Hospital,AVG(Billing_Amount) AS Avg_Billing
+FROM healthcare_1
+GROUP BY Hospital
+ORDER BY Avg_Billing DESC;
+
+SELECT TOP 10 Hospital,AVG(Billing_Amount) AS Avg_Billing
+FROM healthcare_1
+GROUP BY Hospital
+ORDER BY Avg_Billing ASC;
+
+SELECT Hospital,AVG(Billing_Amount) AS Avg_Billing
+FROM healthcare_1
+GROUP BY Hospital
+ORDER BY Avg_Billing ASC;
+
+    --How does billing vary by admission type (urgent, emergency, elective)?
+
+SELECT Admission_Type, ROUND(AVG(Billing_Amount), 2) AS Avg_Billing
+FROM healthcare_1
+GROUP BY Admission_Type
+ORDER BY Avg_Billing DESC;
+
+   -- Are there specific medical conditions associated with higher billing amounts?
+
+SELECT Medical_Condition, ROUND(AVG(Billing_Amount), 2) AS Avg_Billing
+FROM healthcare_1
+GROUP BY Medical_Condition
+ORDER BY Avg_Billing
+
+--2. Insurance Provider Analysis:
+
+    --What is the distribution of billing amounts across insurance providers?
+SELECT Insurance_Provider, ROUND(AVG(Billing_Amount), 2) AS Avg_Billing
+FROM healthcare_1
+GROUP BY Insurance_Provider
+ORDER BY Avg_Billing DESC;
+
+
+--3. Demographic Trends:
+
+    --Are there correlations between patient gender or blood type and billing amounts?
+
+SELECT Gender, ROUND(AVG(Billing_Amount), 2) AS Avg_Billing
+FROM healthcare_1
+GROUP BY Gender
+ORDER BY Avg_Billing DESC;
+
+
+SELECT Blood_Type, ROUND(AVG(Billing_Amount), 2) AS Avg_Billing
+FROM healthcare_1
+GROUP BY Blood_Type
+ORDER BY Avg_Billing DESC;
+
+
+    --Do older patients or specific demographics incur higher treatment costs? 
+
+ SELECT 
+    ROUND(AVG(CASE WHEN Age < 18 THEN Billing_Amount END), 2) AS Minor_Avg_Billing,
+    ROUND(AVG(CASE WHEN Age BETWEEN 18 AND 65 THEN Billing_Amount END), 2) AS Adult_Avg_Billing,
+    ROUND(AVG(CASE WHEN Age > 65 THEN Billing_Amount END), 2) AS Senior_Avg_Billing
+FROM healthcare_1;
