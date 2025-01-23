@@ -1,0 +1,83 @@
+--Data Cleaning 
+
+--My first step will be to create a staging table to keep raw Data reserved
+
+SELECT *
+INTO healthcare_1
+FROM healthcare_dataset;
+
+SELECT * 
+FROM dbo.healthcare_1
+
+--1. Remove Duplicates
+
+SELECT *,
+ROW_NUMBER() 
+OVER(
+    PARTITION BY Name, Age, Gender, Date_of_admission, Medical_Condition
+    ORDER BY NAME) AS row_num
+    FROM healthcare_1;
+
+--Since this data has no unique identifiers I created this CTE to help find duplicate rows
+WITH duplicate_cte AS
+(
+SELECT *,
+ROW_NUMBER() 
+OVER(
+    PARTITION BY Name, Age, Gender, Date_of_admission, Medical_Condition, Hospital, Insurance_Provider, Room_Number
+    ORDER BY NAME) AS row_num
+    FROM healthcare_1
+)
+DELETE 
+FROM duplicate_cte
+WHERE row_num > 1;
+
+--Verifyng update was successful
+
+WITH duplicate_cte AS
+(
+SELECT *,
+ROW_NUMBER() 
+OVER(
+    PARTITION BY Name, Age, Gender, Date_of_admission, Medical_Condition, Hospital, Insurance_Provider, Room_Number
+    ORDER BY NAME) AS row_num
+    FROM healthcare_1
+)
+SELECT * 
+FROM duplicate_cte
+WHERE row_num > 1;
+
+SELECT *
+FROM healthcare_1
+
+--2. Standardize the Data
+
+--Changing the 'Name' column in the dataset to all lower case to help with readability. 
+--Also updated the 'Doctor' column so all names in the datset are consistent
+
+UPDATE healthcare_1
+SET NAME = LOWER(Name)
+
+UPDATE healthcare_1
+SET Doctor = LOWER(Doctor)
+
+
+SELECT TOP 1000 Name, Doctor 
+FROM healthcare_1
+
+--I rounded the Billing_Amount column to healp with readability for future use
+SELECT Billing_Amount
+FROM healthcare_1
+
+UPDATE healthcare_1
+SET Billing_Amount = ROUND(Billing_Amount, 2)
+
+SELECT *
+FROM healthcare_1;
+
+--3. Address Null/blank values
+
+SELECT *
+FROM healthcare_1
+
+--After looking through each row, there is not column that contains any null or blank values
